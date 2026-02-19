@@ -128,16 +128,15 @@ export async function POST(request) {
     };
 
     // ── 9. Build response as a single flat object ──
-    // Pick the first drug entry (or filtered one)
-    if (drugEntries.length === 0) {
-      return NextResponse.json(
-        { error: "No drug recommendations found for the detected variants." },
-        { status: 404 }
-      );
-    }
-
     const dr = drugEntries[0];
     const key = `${dr.gene}:${dr.rec.drug}`;
+
+    // Compute Clinical Risk Score (0-100)
+    // Formula: (Max_AS - Current_AS) * 50, where Max_AS = 2.0
+    const as = dr.geneResult.activity_score ?? 2.0;
+    const severityMap = { none: 0, low: 20, moderate: 60, high: 85, critical: 100 };
+    const baseRisk = (2.0 - Math.min(2.0, as)) * 50;
+    const riskScore = Math.max(baseRisk, severityMap[normalizeSeverity(dr.rec.severity)] || 0);
 
     return NextResponse.json({
       patient_id: sampleId,
@@ -145,6 +144,7 @@ export async function POST(request) {
       timestamp: new Date().toISOString(),
       risk_assessment: {
         risk_label: dr.rec.risk_label,
+        risk_score: Math.round(riskScore),
         confidence_score: confidenceScore,
         severity: normalizeSeverity(dr.rec.severity),
       },
@@ -152,6 +152,7 @@ export async function POST(request) {
         primary_gene: dr.geneResult.primary_gene,
         diplotype: dr.geneResult.diplotype,
         phenotype: normalizePhenotype(dr.geneResult.phenotype),
+        activity_score: dr.geneResult.activity_score,
         detected_variants: dr.geneResult.detected_variants,
       },
       clinical_recommendation: {

@@ -1,7 +1,9 @@
-
-import { Dna } from "lucide-react";
+import { Dna, LogOut, User as UserIcon } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Header() {
+    const { user, logout } = useAuth();
+
     return (
         <header
             className="h-[80px] w-full flex items-center justify-between px-8 bg-primary shadow-lg sticky top-0 z-50 backdrop-blur-sm"
@@ -21,12 +23,27 @@ export default function Header() {
                 </div>
             </div>
 
-            {/* Right side: Status Badge */}
-            {/* <div>
-                <span className="px-3 py-1.5 rounded-full bg-white/10 text-white/90 text-[10px] font-bold uppercase tracking-widest border border-white/20 backdrop-blur-sm shadow-sm">
-                    UI Prototype
-                </span>
-            </div> */}
+            {/* Right side: User Profile & Logout */}
+            {user && (
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 px-4 py-2 bg-white/10 rounded-xl border border-white/10">
+                        <div className="h-8 w-8 rounded-lg bg-accent/20 flex items-center justify-center border border-accent/20">
+                            <UserIcon className="h-4 w-4 text-accent" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xs font-bold text-white leading-none">{user.firstName} {user.lastName}</span>
+                            <span className="text-[10px] text-white/60 font-medium">Practitioner</span>
+                        </div>
+                    </div>
+                    <button
+                        onClick={logout}
+                        className="p-2.5 hover:bg-white/10 rounded-xl border border-transparent hover:border-white/10 text-white/80 hover:text-white transition-all group"
+                        title="Logout"
+                    >
+                        <LogOut className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                    </button>
+                </div>
+            )}
         </header>
     );
 }

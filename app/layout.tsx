@@ -9,6 +9,7 @@ const inter = Inter({
 });
 
 import Header from "@/components/Header";
+import { AuthProvider } from "@/lib/auth-context";
 
 export const metadata: Metadata = {
   title: "PharmaGuard | Pharmacogenomic Risk Engine",
@@ -23,12 +24,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} antialiased text-text`}>
-        <div className="app-content relative z-10 min-h-screen flex flex-col bg-app-bg">
-          <Header />
-          <main className="flex-1 flex flex-col">
-            {children}
-          </main>
-        </div>
+        <AuthProvider>
+          <div className="app-content relative z-10 min-h-screen flex flex-col bg-app-bg">
+            <Header />
+            <main className="flex-1 flex flex-col">
+              {children}
+            </main>
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

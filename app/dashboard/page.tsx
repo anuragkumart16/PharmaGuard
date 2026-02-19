@@ -7,9 +7,12 @@ import DrugInput from "@/components/DrugInput";
 import ActionButton from "@/components/ActionButton";
 import ResultsPlaceholder from "@/components/ResultsPlaceholder";
 import Toast from "@/components/Toast";
+import AnalysisReport from "@/components/AnalysisReport";
 import Stepper, { Step } from "@/components/Stepper";
-import { Loader2, ShieldCheck, FileText, Pill, AlertCircle, Info } from "lucide-react";
+import { Loader2, ShieldCheck, FileText, Pill, AlertCircle, Info, RefreshCw } from "lucide-react";
 import { motion } from "motion/react";
+
+import { useAuth } from "@/lib/auth-context";
 
 interface ToastState {
   variant: "success" | "error";
@@ -24,6 +27,8 @@ export default function Home() {
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [toast, setToast] = useState<ToastState | null>(null);
   const [activeStep, setActiveStep] = useState(1);
+  const [analysisResults, setAnalysisResults] = useState<any[]>([]);
+  const { user } = useAuth();
 
   const showToast = (variant: "success" | "error", title: string, description: string) => {
     setToast({ variant, title, description });
@@ -52,14 +57,51 @@ export default function Home() {
     setAnalysisComplete(false);
   };
 
-  const handleRunAnalysis = () => {
+  const handleRunAnalysis = async () => {
+    if (!file || selectedDrugs.length === 0) return;
+
     setIsAnalyzing(true);
-    // Mock intuitive Loading
-    setTimeout(() => {
+    const results: any[] = [];
+    let hasError = false;
+
+    try {
+      // For each drug, we run an analysis. The API takes 'file' and '?drug='
+      for (const drug of selectedDrugs) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await fetch(`/api?drug=${encodeURIComponent(drug)}`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          results.push(data);
+        } else {
+          console.error(`Error analyzing ${drug}:`, data.error);
+          hasError = true;
+          // Keep continuing for other drugs if possible
+        }
+      }
+
+      if (results.length > 0) {
+        setAnalysisResults(results);
+        setAnalysisComplete(true);
+        if (hasError) {
+          showToast("success", "Partial Results", "Analysis complete, but some drugs could not be matched.");
+        } else {
+          showToast("success", "Analysis Complete", "Clinical risk reports generated successfully.");
+        }
+      } else {
+        showToast("error", "Analysis Failed", "Could not match genomic data with any selected drugs.");
+      }
+    } catch (error) {
+      showToast("error", "System Error", "Failed to connect to analysis engine.");
+    } finally {
       setIsAnalyzing(false);
-      setAnalysisComplete(true);
-      showToast("success", "Analysis Complete", "Pharmacogenomic risk insights generated successfully.");
-    }, 2800);
+    }
   };
 
   // Stepper logic: Step 1 depends on File, Step 2 depends on Drugs
@@ -151,52 +193,36 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <div className="space-y-8">
-              {/* Results Summary Card */}
-              <div className="w-full bg-card border-2 border-primary rounded-[var(--radius-card)] p-12 flex flex-col items-center justify-center space-y-8 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-secondary to-accent" />
-
-                <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
-                  <ShieldCheck className="h-12 w-12 text-primary" />
-                </div>
-
-                <div className="text-center space-y-4">
-                  <h3 className="text-3xl font-black text-text tracking-tight uppercase italic">Analysis Complete</h3>
-
-                  <div className="flex flex-wrap items-center justify-center gap-8 py-6 px-10 bg-bg-subtle rounded-2xl border border-border shadow-inner">
-                    <div className="flex flex-col items-center gap-2">
-                      <FileText className="h-6 w-6 text-primary" />
-                      <span className="text-[11px] uppercase font-black text-text-muted">{file?.name.split('.').pop()} Data Active</span>
-                    </div>
-                    <div className="w-px h-10 bg-border hidden sm:block" />
-                    <div className="flex flex-col items-center gap-2">
-                      <Pill className="h-6 w-6 text-primary" />
-                      <span className="text-[11px] uppercase font-black text-text-muted">{selectedDrugs.length} Drugs Evaluated</span>
-                    </div>
+            <div className="space-y-8 animate-slide-in">
+              {/* Summary Header */}
+              <div className="flex items-center justify-between p-6 bg-primary/10 rounded-2xl border border-primary/20 shadow-sm">
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 bg-primary rounded-xl flex items-center justify-center shadow-lg">
+                    <ShieldCheck className="h-6 w-6 text-white" />
                   </div>
-
-                  <p className="text-text-soft font-medium max-w-md mx-auto leading-relaxed pt-2">
-                    Personalized pharmacogenomic risk scores have been generated based on detected SNPs in your genomic sequence.
-                  </p>
+                  <div>
+                    <h3 className="text-lg font-black text-text uppercase italic tracking-tight leading-none mb-1">Session Complete</h3>
+                    <p className="text-xs text-text-soft font-bold uppercase tracking-widest">{file?.name} • {analysisResults.length} Drug Matches Found</p>
+                  </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-                  <button className="flex-1 px-8 py-4 bg-primary text-white rounded-xl font-bold shadow-lg hover:shadow-primary/30 hover:-translate-y-1 transition-all active:translate-y-0">
-                    View Full Report
-                  </button>
-                  <button
-                    onClick={() => {
-                      setAnalysisComplete(false);
-                      setFile(null);
-                      setSelectedDrugs([]);
-                      setActiveStep(1);
-                    }}
-                    className="px-8 py-4 bg-bg-hover text-text rounded-xl font-bold hover:bg-border transition-colors text-sm"
-                  >
-                    New Analysis
-                  </button>
-                </div>
+                <button
+                  onClick={() => {
+                    setAnalysisComplete(false);
+                    setFile(null);
+                    setSelectedDrugs([]);
+                    setAnalysisResults([]);
+                    setActiveStep(1);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-bg-hover text-text rounded-xl font-black text-[10px] uppercase tracking-widest transition-all border border-border shadow-sm active:scale-95"
+                >
+                  <RefreshCw className="h-3 w-3" />
+                  New Analysis
+                </button>
               </div>
+
+              {/* Professional Report Display */}
+              <AnalysisReport results={analysisResults} />
             </div>
           )}
         </section>
