@@ -12,7 +12,6 @@
  * @returns True if the string meets the basic VCF criteria, false otherwise.
  */
 
-
 export function isValidVCF(vcfText: string): boolean {
   if (!vcfText || typeof vcfText !== "string") return false;
 
