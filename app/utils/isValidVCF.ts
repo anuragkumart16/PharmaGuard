@@ -1,3 +1,18 @@
+
+/**
+ * Validates if a given string follows the basic Variant Call Format (VCF) structure.
+ *
+ * It performs the following checks:
+ * 1. Presence of the mandatory `##fileformat=VCFv` header.
+ * 2. Presence of the `#CHROM` column header line with at least 8 standard columns.
+ * 3. Existence of at least one data line.
+ * 4. Basic structural integrity of data lines (minimum column count and numeric POS).
+ *
+ * @param vcfText - The string content of the VCF file to validate.
+ * @returns True if the string meets the basic VCF criteria, false otherwise.
+ */
+
+
 export function isValidVCF(vcfText: string): boolean {
   if (!vcfText || typeof vcfText !== "string") return false;
 
