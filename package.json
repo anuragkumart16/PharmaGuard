@@ -11,10 +11,10 @@
   "dependencies": {
     "@gmod/vcf": "^7.0.0",
     "bcrypt": "^6.0.0",
-    "groq-sdk": "^0.37.0",
-    "mongoose": "^9.2.1",
     "clsx": "^2.1.1",
+    "groq-sdk": "^0.37.0",
     "lucide-react": "^0.575.0",
+    "mongoose": "^9.2.1",
     "motion": "^12.34.2",
     "next": "16.1.6",
     "react": "19.2.3",
@@ -26,8 +26,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
+    "eslint": "^10.0.0",
+    "eslint-config-next": "^0.2.4",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
