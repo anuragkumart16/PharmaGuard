@@ -1,0 +1,198 @@
+{
+    "CYP2D6": {
+        "drugs": [
+            "Codeine",
+            "Tramadol"
+        ],
+        "phenotypes": {
+            "PM": {
+                "risk_label": "Toxic",
+                "severity": "critical",
+                "recommendation": "Avoid codeine and tramadol. These prodrugs require CYP2D6 to convert to active metabolites. Poor metabolizers experience therapeutic failure. Use morphine (non-prodrug) or NSAIDs."
+            },
+            "IM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "moderate",
+                "recommendation": "Reduced CYP2D6 activity leads to decreased conversion to active metabolites. Consider lower doses or alternative analgesics. Monitor for inadequate pain relief."
+            },
+            "NM": {
+                "risk_label": "Safe",
+                "severity": "none",
+                "recommendation": "Standard dosing expected to produce normal analgesic effect. No pharmacogenomic dose adjustment required."
+            },
+            "RM": {
+                "risk_label": "Safe",
+                "severity": "low",
+                "recommendation": "Slightly increased metabolism. Standard dosing is generally appropriate. Monitor for reduced efficacy at standard doses."
+            },
+            "URM": {
+                "risk_label": "Toxic",
+                "severity": "critical",
+                "recommendation": "Avoid codeine — risk of fatal respiratory depression due to ultra-rapid conversion to morphine. Avoid tramadol similarly. Use non-prodrug analgesics."
+            }
+        }
+    },
+    "CYP2C19": {
+        "drugs": [
+            "Clopidogrel",
+            "Omeprazole"
+        ],
+        "phenotypes": {
+            "PM": {
+                "risk_label": "Toxic",
+                "severity": "critical",
+                "recommendation": "Avoid clopidogrel — significantly reduced platelet inhibition increases cardiovascular event risk. Use prasugrel or ticagrelor. Omeprazole: consider dose reduction or pantoprazole."
+            },
+            "IM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "moderate",
+                "recommendation": "Clopidogrel has reduced effectiveness. Consider alternative antiplatelet therapy especially in high-risk patients. Omeprazole may have modestly increased levels."
+            },
+            "NM": {
+                "risk_label": "Safe",
+                "severity": "none",
+                "recommendation": "Standard dosing for clopidogrel and omeprazole. Normal CYP2C19 metabolism. No pharmacogenomic adjustment needed."
+            },
+            "RM": {
+                "risk_label": "Safe",
+                "severity": "low",
+                "recommendation": "Enhanced metabolism may slightly increase clopidogrel efficacy. Standard dosing appropriate."
+            },
+            "URM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "moderate",
+                "recommendation": "Clopidogrel: enhanced platelet inhibition may increase bleeding risk. Omeprazole: reduced efficacy due to rapid metabolism. Consider PPI dose increase."
+            }
+        }
+    },
+    "CYP2C9": {
+        "drugs": [
+            "Warfarin"
+        ],
+        "phenotypes": {
+            "PM": {
+                "risk_label": "Toxic",
+                "severity": "critical",
+                "recommendation": "Reduce warfarin dose 50-80%. Poor CYP2C9 metabolism leads to elevated warfarin levels and high bleeding risk. Initiate at ≤2mg/day with frequent INR monitoring."
+            },
+            "IM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "moderate",
+                "recommendation": "Reduce warfarin dose by 20-40%. Intermediate CYP2C9 metabolism results in slower S-warfarin clearance. More frequent INR monitoring recommended."
+            },
+            "NM": {
+                "risk_label": "Safe",
+                "severity": "none",
+                "recommendation": "Standard warfarin dosing algorithm applies. Normal CYP2C9 metabolism. Follow standard INR monitoring protocol."
+            },
+            "RM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "low",
+                "recommendation": "May require slightly higher warfarin doses. Monitor INR and adjust accordingly."
+            },
+            "URM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "moderate",
+                "recommendation": "May require higher warfarin doses for therapeutic INR. Rapid S-warfarin clearance can lead to subtherapeutic anticoagulation. Monitor INR frequently."
+            }
+        }
+    },
+    "SLCO1B1": {
+        "drugs": [
+            "Simvastatin"
+        ],
+        "phenotypes": {
+            "PM": {
+                "risk_label": "Toxic",
+                "severity": "critical",
+                "recommendation": "Avoid simvastatin or use ≤20mg/day. SLCO1B1 poor function leads to increased statin exposure and high myopathy/rhabdomyolysis risk. Use pravastatin or rosuvastatin."
+            },
+            "IM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "moderate",
+                "recommendation": "Avoid simvastatin >20mg/day. Reduced hepatic uptake increases myopathy risk. Consider pravastatin or rosuvastatin. Monitor for muscle symptoms."
+            },
+            "NM": {
+                "risk_label": "Safe",
+                "severity": "none",
+                "recommendation": "Standard simvastatin dosing. Normal hepatic uptake transporter function. Standard monitoring applies."
+            },
+            "RM": {
+                "risk_label": "Safe",
+                "severity": "none",
+                "recommendation": "Normal to enhanced hepatic uptake. Standard dosing expected to be effective."
+            },
+            "URM": {
+                "risk_label": "Safe",
+                "severity": "none",
+                "recommendation": "Enhanced hepatic uptake. Standard dosing is effective. No adjustment needed."
+            }
+        }
+    },
+    "TPMT": {
+        "drugs": [
+            "Azathioprine",
+            "6-Mercaptopurine"
+        ],
+        "phenotypes": {
+            "PM": {
+                "risk_label": "Toxic",
+                "severity": "critical",
+                "recommendation": "Reduce to 10% of standard dose or use alternative. TPMT-deficient patients accumulate cytotoxic thioguanine nucleotides causing fatal myelosuppression. Mandatory CBC monitoring."
+            },
+            "IM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "moderate",
+                "recommendation": "Reduce starting dose 30-70%. Intermediate TPMT activity leads to higher thioguanine nucleotide levels. Monitor CBC weekly during initiation."
+            },
+            "NM": {
+                "risk_label": "Safe",
+                "severity": "none",
+                "recommendation": "Standard dosing for azathioprine/6-MP. Normal TPMT activity. Monitor CBC per standard protocol."
+            },
+            "RM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "low",
+                "recommendation": "May require increased doses for therapeutic effect. Rapid metabolism may reduce efficacy. Consider therapeutic drug monitoring."
+            },
+            "URM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "moderate",
+                "recommendation": "May require significantly increased doses. Rapid TPMT metabolism shunts thiopurines away from cytotoxic pathway, reducing efficacy."
+            }
+        }
+    },
+    "DPYD": {
+        "drugs": [
+            "Fluorouracil",
+            "Capecitabine"
+        ],
+        "phenotypes": {
+            "PM": {
+                "risk_label": "Toxic",
+                "severity": "critical",
+                "recommendation": "CONTRAINDICATED. Avoid fluoropyrimidines entirely. DPD-deficient patients cannot catabolize 5-FU, leading to fatal toxicity. Use alternative chemotherapy."
+            },
+            "IM": {
+                "risk_label": "Toxic",
+                "severity": "high",
+                "recommendation": "Reduce initial dose 25-50%. Partial DPD deficiency results in reduced 5-FU clearance. Monitor closely for early toxicity signs."
+            },
+            "NM": {
+                "risk_label": "Safe",
+                "severity": "none",
+                "recommendation": "Standard fluoropyrimidine dosing per BSA-based calculation. Normal DPD activity. Monitor per standard oncology protocol."
+            },
+            "RM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "low",
+                "recommendation": "May have reduced efficacy due to rapid 5-FU catabolism. Consider therapeutic drug monitoring."
+            },
+            "URM": {
+                "risk_label": "Adjust Dosage",
+                "severity": "moderate",
+                "recommendation": "Reduced efficacy likely due to rapid 5-FU catabolism. Evaluate dose increase or alternative regimens."
+            }
+        }
+    }
+}
