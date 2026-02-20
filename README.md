@@ -71,7 +71,8 @@ PharmaGuard automates this entire pipeline. We use a **deterministic inference e
 
     ```env
     NEXT_PUBLIC_API_URL=http://localhost:3000
-    # Add other necessary keys here if applicable
+    GROQ_API_KEY=your_api_key
+    MONGODB_URI=your_mongodb_uri
     ```
 
 4.  **Run the development server**
