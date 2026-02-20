@@ -19,7 +19,7 @@ Analyzing patient genomic data against medication guidelines is currently a manu
 4.  Draft clinical reports by hand.
 
 **The Solution:**
-PharmaGuard automates this entire pipeline. We use a **deterministic inference engine** to map genotype to phenotype with 100% reproducibility, providing instant "Traffic Light" safety assessments for drugs based on a patient's unique genetic profile.
+PharmaGuard automates this entire pipeline. We use a **deterministic inference engine** to map genotype to phenotype with 100% reproducibility, providing instant "Traffic Light" safety assessments for drugs based on a patient's unique genetic profile. Red for Toxicity, Yellow for change of dosage and Green for Normal.
 
 ## 👥 Target Audience
 
