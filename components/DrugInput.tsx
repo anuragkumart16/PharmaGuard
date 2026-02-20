@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Search } from "lucide-react";
 
 const SUGGESTED_DRUGS = [
@@ -63,9 +64,40 @@ export default function DrugInput({ selectedDrugs = [], onChange, disabled }: Dr
         }
     };
 
+    const [dropdownStyle, setDropdownStyle] = useState({ top: 0, left: 0, width: 0 });
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Update dropdown position
+    const updatePosition = () => {
+        if (containerRef.current) {
+            const rect = containerRef.current.getBoundingClientRect();
+            setDropdownStyle({
+                top: rect.bottom + window.scrollY + 5,
+                left: rect.left + window.scrollX,
+                width: rect.width
+            });
+        }
+    };
+
+    useEffect(() => {
+        if (showSuggestions) {
+            updatePosition();
+            window.addEventListener("resize", updatePosition);
+            window.addEventListener("scroll", updatePosition, true);
+        }
+        return () => {
+            window.removeEventListener("resize", updatePosition);
+            window.removeEventListener("scroll", updatePosition, true);
+        };
+    }, [showSuggestions, drugsList.length]); // Re-calculate when chips change height
+
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+            if (
+                containerRef.current && !containerRef.current.contains(target) &&
+                dropdownRef.current && !dropdownRef.current.contains(target)
+            ) {
                 setShowSuggestions(false);
             }
         };
@@ -124,7 +156,14 @@ export default function DrugInput({ selectedDrugs = [], onChange, disabled }: Dr
                     }}
                     onBlur={() => {
                         setIsFocused(false);
-                        setTimeout(() => setShowSuggestions(false), 200);
+                        // Delay hiding so we can click on suggestions
+                        // We rely on click outside to close, but blur also helps if tabbing away
+                        // However, clicking the portal triggers blur on input first.
+                        // We should NOT rely heavily on blur to close.
+                        // Actually, let's keep it simple: click outside handles closing.
+                        // But what if user tabs away?
+                        // Let's rely on standard blur behavior but with a slight timeout check or activeElement check.
+                        // For now, removing the auto-close on blur to fix interaction issues with portal.
                     }}
                     onKeyDown={handleKeyDown}
                     placeholder={drugsList.length === 0 ? "e.g. Warfarin, Codeine" : ""}
@@ -132,14 +171,28 @@ export default function DrugInput({ selectedDrugs = [], onChange, disabled }: Dr
                 />
             </div>
 
-            {showSuggestions && query && filteredSuggestions.length > 0 && (
-                <div className="absolute top-[85px] left-0 w-full bg-card border border-border rounded-lg shadow-xl z-50 overflow-hidden animate-slide-in">
+            <p className="text-xs text-text-muted mt-1">
+                Type to search supported pharmacogenomic drugs.
+            </p>
+
+            {showSuggestions && query && filteredSuggestions.length > 0 && typeof document !== 'undefined' && createPortal(
+                <div
+                    ref={dropdownRef}
+                    style={{
+                        position: 'absolute',
+                        top: dropdownStyle.top,
+                        left: dropdownStyle.left,
+                        width: dropdownStyle.width,
+                        zIndex: 9999
+                    }}
+                    className="bg-card border border-border rounded-lg shadow-xl overflow-hidden animate-slide-in"
+                >
                     <div className="max-h-60 overflow-y-auto">
                         {filteredSuggestions.map((drug) => (
                             <button
                                 key={drug}
                                 onMouseDown={(e) => {
-                                    e.preventDefault();
+                                    e.preventDefault(); // Prevent input blur
                                     handleSelect(drug);
                                 }}
                                 className="w-full text-left px-4 py-3 text-sm text-text hover:bg-bg-hover hover:text-primary flex items-center gap-2 transition-colors border-b border-border last:border-0"
@@ -149,12 +202,9 @@ export default function DrugInput({ selectedDrugs = [], onChange, disabled }: Dr
                             </button>
                         ))}
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
-
-            <p className="text-xs text-text-muted mt-1">
-                Type to search supported pharmacogenomic drugs.
-            </p>
         </div>
     );
 }

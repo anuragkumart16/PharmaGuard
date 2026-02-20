@@ -143,29 +143,29 @@ const ReportCard = ({ report }: ReportCardProps) => {
     return (
         <div className={`w-full bg-card border border-border border-l-4 ${getRiskBorder()} rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md h-fit`}>
             {/* Header Segment */}
-            <div className="p-6 flex items-start justify-between gap-4">
-                <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl ${report.risk_assessment.severity === "high" ? "bg-error/5" : "bg-success/5"}`}>
+            <div className="p-5 md:p-6 flex flex-col md:flex-row md:items-start justify-between gap-4">
+                <div className="flex items-start gap-4 w-full">
+                    <div className={`p-3 rounded-2xl shrink-0 ${report.risk_assessment.severity === "high" ? "bg-error/5" : "bg-success/5"}`}>
                         {getRiskIcon()}
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <h3 className="text-xl font-bold text-text uppercase italic tracking-tight">{report.drug}</h3>
+                            <h3 className="text-lg md:text-xl font-bold text-text uppercase italic tracking-tight break-words">{report.drug}</h3>
                             <SeverityBadge
                                 severity={report.risk_assessment.severity}
                                 label={report.risk_assessment.risk_label || report.risk_assessment.severity}
                             />
                         </div>
-                        <div className="flex items-center gap-3">
-                            <p className="text-xs text-text-muted font-medium flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-y-2 gap-x-3">
+                            <p className="text-xs text-text-muted font-medium flex items-center gap-2 whitespace-nowrap">
                                 <Activity className="h-3 w-3" />
-                                {report.pharmacogenomic_profile.phenotype} Phenotype Status
+                                {report.pharmacogenomic_profile.phenotype} Status
                             </p>
-                            <div className="hidden sm:flex items-center gap-3 ml-2 pl-3 border-l border-border">
-                                <div className="flex flex-col">
+                            <div className="w-full md:w-auto md:flex items-center gap-3 md:ml-2 md:pl-3 md:border-l border-border mt-2 md:mt-0">
+                                <div className="flex flex-col w-full md:w-auto">
                                     <span className="text-[10px] font-black text-text-muted uppercase tracking-widest leading-none mb-1">Clinical Risk Index</span>
                                     <div className="flex items-center gap-2">
-                                        <div className="w-24 h-2 bg-border rounded-full overflow-hidden shadow-inner">
+                                        <div className="flex-1 md:w-24 h-2 bg-border rounded-full overflow-hidden shadow-inner">
                                             <div
                                                 className={`h-full transition-all duration-1000 ${report.risk_assessment.severity === 'critical' || report.risk_assessment.severity === 'high'
                                                     ? 'bg-error'
@@ -191,17 +191,17 @@ const ReportCard = ({ report }: ReportCardProps) => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 self-end md:self-start mt-2 md:mt-0">
                     <button
                         onClick={copyToClipboard}
-                        className="p-2 hover:bg-bg-hover rounded-lg transition-colors text-text-muted hover:text-primary"
+                        className="p-2 hover:bg-bg-hover rounded-lg transition-colors text-text-muted hover:text-primary active:scale-95"
                         title="Copy JSON"
                     >
                         {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
                     </button>
                     <button
                         onClick={downloadJson}
-                        className="p-2 hover:bg-bg-hover rounded-lg transition-colors text-text-muted hover:text-primary"
+                        className="p-2 hover:bg-bg-hover rounded-lg transition-colors text-text-muted hover:text-primary active:scale-95"
                         title="Download report"
                     >
                         <Download className="h-4 w-4" />
@@ -249,7 +249,7 @@ const ReportCard = ({ report }: ReportCardProps) => {
 
             {isExpanded && (
                 <div className="p-6 bg-card animate-slide-in space-y-6">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="p-4 rounded-xl bg-bg-subtle border border-border">
                             <span className="text-[10px] font-black uppercase tracking-widest text-text-muted block mb-2">Molecular Profile</span>
                             <div className="space-y-1">
@@ -328,14 +328,14 @@ export default function AnalysisReport({ results }: { results: AnalysisResult[] 
 
     return (
         <div className="w-full space-y-8 animate-slide-in">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
                     <h2 className="text-2xl font-black text-text tracking-tight uppercase italic">Clinical Assessment</h2>
                     <p className="text-sm text-text-soft font-medium">Genomic cross-reference results from PGx Engine</p>
                 </div>
                 <button
                     onClick={() => setShowRaw(!showRaw)}
-                    className="flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-xl text-xs font-black uppercase tracking-widest text-text-soft hover:bg-bg-hover transition-colors"
+                    className="self-start md:self-auto flex items-center gap-2 px-4 py-2 bg-white border border-border rounded-xl text-xs font-black uppercase tracking-widest text-text-soft hover:bg-bg-hover transition-colors"
                 >
                     <FileJson className="h-3.5 w-3.5" />
                     {showRaw ? "Visual Mode" : "Raw JSON"}

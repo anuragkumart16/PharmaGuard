@@ -35,7 +35,7 @@ export default function LandingPage() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
           </span>
-          <span className="text-[10px] font-black uppercase tracking-widest text-primary">v2.0 Clinical Release is Live</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-primary">Project is Live 2.0</span>
         </motion.div>
 
         <motion.h1
