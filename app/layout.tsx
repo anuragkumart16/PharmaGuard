@@ -23,10 +23,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased text-text`}>
+      <body className={`${inter.variable} antialiased text-text bg-white`}>
         <AuthProvider>
-          <div className="app-content relative z-10 min-h-screen flex flex-col bg-app-bg">
-            <Header />
+          <div className="app-content relative z-10 min-h-screen flex flex-col">
             <main className="flex-1 flex flex-col">
               {children}
             </main>
