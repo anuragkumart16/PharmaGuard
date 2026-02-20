@@ -36,6 +36,7 @@ export default function Home() {
   const [selectedReport, setSelectedReport] = useState<any | null>(null);
   const itemsPerPage = 5;
 
+  const [patientId, setPatientId] = useState("");
   const { user } = useAuth();
 
   useEffect(() => {
@@ -135,6 +136,7 @@ export default function Home() {
       for (const drug of selectedDrugs) {
         const formData = new FormData();
         formData.append("file", file);
+        if (patientId.trim()) formData.append("patientId", patientId.trim());
 
         const res = await fetch(`/api?drug=${encodeURIComponent(drug)}`, {
           method: "POST",
@@ -206,6 +208,7 @@ export default function Home() {
               Case History
             </button>
           </div>
+
         </div>
 
         {viewMode === "analysis" ? (
@@ -233,7 +236,21 @@ export default function Home() {
                           Please upload a <strong>.VCF</strong> file containing variant data for Chromosome 22 or genome-wide.
                         </p>
                       </div>
-                      <div className="mt-2">
+
+                      {/* Patient ID string input */}
+                      <div className="mt-6 space-y-2">
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-text-muted ml-1">Patient Identifier (Optional)</label>
+                        <input
+                          type="text"
+                          value={patientId}
+                          onChange={(e) => setPatientId(e.target.value)}
+                          placeholder="E.g., PATIENT-001"
+                          className="w-full px-4 py-3 bg-card border border-border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm text-text placeholder-text-muted font-medium"
+                        />
+                        <p className="text-[10px] uppercase font-bold text-text-muted ml-1 tracking-wider opacity-80">If left empty, system extracts ID from VCF structure.</p>
+                      </div>
+
+                      <div className="mt-6">
                         <UploadCard
                           onFileSelect={handleFileSelect}
                           selectedFile={file}

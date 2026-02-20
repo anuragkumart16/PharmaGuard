@@ -32,7 +32,6 @@ interface AnalysisResult {
     timestamp: string;
     risk_assessment: {
         risk_label: string;
-        risk_score: number;
         confidence_score: number;
         severity: "none" | "low" | "moderate" | "high" | "critical";
     };
@@ -40,7 +39,6 @@ interface AnalysisResult {
         primary_gene: string;
         diplotype: string;
         phenotype: string;
-        activity_score?: number;
         detected_variants: Array<{ rsid?: string; variant?: string; genotype?: string }>;
     };
     clinical_recommendation: {
@@ -138,6 +136,10 @@ const ReportCard = ({ report }: ReportCardProps) => {
         return "border-l-success";
     };
 
+    // Calculate a display risk score percentage based on severity
+    const severityMap: Record<string, number> = { none: 0, low: 20, moderate: 60, high: 85, critical: 100 };
+    const displayRiskScore = severityMap[report.risk_assessment.severity] || 0;
+
     return (
         <div className={`w-full bg-card border border-border border-l-4 ${getRiskBorder()} rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md h-fit`}>
             {/* Header Segment */}
@@ -166,21 +168,21 @@ const ReportCard = ({ report }: ReportCardProps) => {
                                         <div className="w-24 h-2 bg-border rounded-full overflow-hidden shadow-inner">
                                             <div
                                                 className={`h-full transition-all duration-1000 ${report.risk_assessment.severity === 'critical' || report.risk_assessment.severity === 'high'
-                                                        ? 'bg-error'
-                                                        : report.risk_assessment.severity === 'moderate'
-                                                            ? 'bg-warning'
-                                                            : 'bg-success'
+                                                    ? 'bg-error'
+                                                    : report.risk_assessment.severity === 'moderate'
+                                                        ? 'bg-warning'
+                                                        : 'bg-success'
                                                     }`}
-                                                style={{ width: `${report.risk_assessment.risk_score}%` }}
+                                                style={{ width: `${displayRiskScore}%` }}
                                             />
                                         </div>
                                         <span className={`text-xs font-black ${report.risk_assessment.severity === 'critical' || report.risk_assessment.severity === 'high'
-                                                ? 'text-error'
-                                                : report.risk_assessment.severity === 'moderate'
-                                                    ? 'text-warning'
-                                                    : 'text-success'
+                                            ? 'text-error'
+                                            : report.risk_assessment.severity === 'moderate'
+                                                ? 'text-warning'
+                                                : 'text-success'
                                             }`}>
-                                            {report.risk_assessment.risk_score}%
+                                            {displayRiskScore}%
                                         </span>
                                     </div>
                                 </div>
@@ -258,10 +260,6 @@ const ReportCard = ({ report }: ReportCardProps) => {
                                 <div className="flex justify-between text-xs">
                                     <span className="text-text-soft">Primary Gene:</span>
                                     <span className="font-bold text-text">{report.pharmacogenomic_profile.primary_gene}</span>
-                                </div>
-                                <div className="flex justify-between text-xs">
-                                    <span className="text-text-soft">Activity Score (AS):</span>
-                                    <span className="font-bold text-primary">{report.pharmacogenomic_profile.activity_score ?? '1.0'}</span>
                                 </div>
                                 <div className="flex justify-between text-xs">
                                     <span className="text-text-soft">Sequence Confidence:</span>

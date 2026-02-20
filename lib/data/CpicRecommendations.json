@@ -6,8 +6,8 @@
         ],
         "phenotypes": {
             "PM": {
-                "risk_label": "Toxic",
-                "severity": "critical",
+                "risk_label": "Ineffective",
+                "severity": "high",
                 "recommendation": "Avoid codeine and tramadol. These prodrugs require CYP2D6 to convert to active metabolites. Poor metabolizers experience therapeutic failure. Use morphine (non-prodrug) or NSAIDs."
             },
             "IM": {

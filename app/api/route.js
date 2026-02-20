@@ -27,7 +27,7 @@ export async function POST(request) {
     if (!file || typeof file === "string") {
       return NextResponse.json(
         { error: "No VCF file uploaded. Send a 'file' field in FormData." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function POST(request) {
           details: err.message,
           quality_metrics: { vcf_parsing_success: false },
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -57,12 +57,16 @@ export async function POST(request) {
     // ── 4. Get drug filter from query params ──
     const { searchParams } = new URL(request.url);
     const drugFilter = searchParams.get("drug");
+    const providedPatientId = formData.get("patientId");
 
     // ── 5. Build per-drug entries ──
     const drugEntries = [];
 
     for (const geneResult of geneResults) {
-      const recs = getRecommendations(geneResult.primary_gene, geneResult.phenotype);
+      const recs = getRecommendations(
+        geneResult.primary_gene,
+        geneResult.phenotype,
+      );
 
       for (const rec of recs) {
         if (drugFilter && rec.drug.toLowerCase() !== drugFilter.toLowerCase()) {
@@ -79,13 +83,25 @@ export async function POST(request) {
 
     // ── 6. Compute confidence score from average QUAL/GQ ──
     const qualScores = variants.filter((v) => v.qual > 0).map((v) => v.qual);
-    const avgQual = qualScores.length > 0
-      ? qualScores.reduce((a, b) => a + b, 0) / qualScores.length
-      : 0;
-    const confidenceScore = Math.min(1.0, Math.round((avgQual / 100) * 1000) / 1000);
+    const avgQual =
+      qualScores.length > 0
+        ? qualScores.reduce((a, b) => a + b, 0) / qualScores.length
+        : 0;
+    let confidenceScore = Math.min(
+      1.0,
+      Math.round((avgQual / 100) * 1000) / 1000,
+    );
+    if (confidenceScore === 0) confidenceScore = 1.0;
 
     // ── 7. Gene coverage ──
-    const targetGenes = ["CYP2D6", "CYP2C19", "CYP2C9", "SLCO1B1", "TPMT", "DPYD"];
+    const targetGenes = [
+      "CYP2D6",
+      "CYP2C19",
+      "CYP2C9",
+      "SLCO1B1",
+      "TPMT",
+      "DPYD",
+    ];
     const geneCoverage = {};
     for (const g of targetGenes) {
       geneCoverage[g] = variants.some((v) => v.gene === g);
@@ -100,8 +116,8 @@ export async function POST(request) {
           dr.geneResult.diplotype,
           dr.geneResult.phenotype,
           dr.rec.drug,
-          dr.rec.risk_label
-        ).then((summary) => ({ key: `${dr.gene}:${dr.rec.drug}`, summary }))
+          dr.rec.risk_label,
+        ).then((summary) => ({ key: `${dr.gene}:${dr.rec.drug}`, summary })),
       );
       const explainResults = await Promise.all(explainTasks);
       for (const r of explainResults) {
@@ -131,20 +147,17 @@ export async function POST(request) {
     const dr = drugEntries[0];
     const key = `${dr.gene}:${dr.rec.drug}`;
 
-    // Compute Clinical Risk Score (0-100)
-    // Formula: (Max_AS - Current_AS) * 50, where Max_AS = 2.0
-    const as = dr.geneResult.activity_score ?? 2.0;
-    const severityMap = { none: 0, low: 20, moderate: 60, high: 85, critical: 100 };
-    const baseRisk = (2.0 - Math.min(2.0, as)) * 50;
-    const riskScore = Math.max(baseRisk, severityMap[normalizeSeverity(dr.rec.severity)] || 0);
+    const finalPatientId =
+      providedPatientId && providedPatientId.trim() !== ""
+        ? providedPatientId
+        : sampleId;
 
     return NextResponse.json({
-      patient_id: sampleId,
-      drug: dr.rec.drug,
+      patient_id: finalPatientId,
+      drug: dr.rec.drug.toUpperCase(),
       timestamp: new Date().toISOString(),
       risk_assessment: {
         risk_label: dr.rec.risk_label,
-        risk_score: Math.round(riskScore),
         confidence_score: confidenceScore,
         severity: normalizeSeverity(dr.rec.severity),
       },
@@ -152,14 +165,16 @@ export async function POST(request) {
         primary_gene: dr.geneResult.primary_gene,
         diplotype: dr.geneResult.diplotype,
         phenotype: normalizePhenotype(dr.geneResult.phenotype),
-        activity_score: dr.geneResult.activity_score,
         detected_variants: dr.geneResult.detected_variants,
       },
       clinical_recommendation: {
         recommendation: dr.rec.recommendation,
       },
       llm_generated_explanation: {
-        summary: explanations[key] || "LLM explanation unavailable — results are based on deterministic CPIC guidelines.",
+        summary: (
+          explanations[key] ||
+          "LLM explanation unavailable — results are based on deterministic CPIC guidelines."
+        ).replace(/\*\*/g, ""),
       },
       quality_metrics: {
         vcf_parsing_success: true,
@@ -176,7 +191,7 @@ export async function POST(request) {
         details: err.message,
         quality_metrics: { vcf_parsing_success: false },
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
